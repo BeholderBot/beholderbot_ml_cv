@@ -9,24 +9,9 @@ Note: The bounding box generation tbd
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import tensorflow as tf
 import tensorflow_datasets as tfds
-
-def man_fn(data):
-    """
-    Manipulation function to create a binary mask from the input image.
-
-    Args:
-        data: A dictionary containing 'image' and 'label' tensors.
-
-    Returns:
-        modified_data: A dictionary with the modified 'image' tensor and the 'label' tensor.
-    """
-    modified_data = {
-        "image": threshold_binary_mask(data['image'], 188),
-        "label": data['label']
-    }
-    return modified_data
 
 def threshold_binary_mask(input_tensor, threshold):
     """
@@ -42,7 +27,7 @@ def threshold_binary_mask(input_tensor, threshold):
     mask = tf.cast(tf.greater(input_tensor, threshold), tf.float32)
     return mask
 
-def map_to_binary(dataset):
+def map_to_binary(dataset, threshold):
     """
     Applies the manipulation function to each element in the dataset.
 
@@ -52,14 +37,25 @@ def map_to_binary(dataset):
     Returns:
         binary_dataset: The dataset with binary masks.
     """
+
+    def man_fn(data):
+        return {"image": threshold_binary_mask(data['image'], threshold), "label": data['label']}
     return dataset.map(lambda x: man_fn(x))
 
+def map_to_bbox(dataset):
+    return dataset
+
 def main():
-    """
-    Main function to load the MNIST dataset and apply binary mask conversion.
-    """
     mnist = tfds.load('mnist')
-    binary_train = map_to_binary(mnist['train'])
+    binary_train = map_to_binary(mnist['train'], 188)
+
+    # Print the first image
+    first_image = next(iter(binary_train.take(1)))['image']
+    plt.imshow(first_image, cmap='gray')
+    plt.axis('off')
+    plt.show()
+    print("done")
 
 if __name__ == "__main__":
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
     main()
