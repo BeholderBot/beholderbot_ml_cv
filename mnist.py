@@ -59,7 +59,6 @@ def map_to_bbox(dataset):
                 x_idx += 1
             y_idx += 1
         return [max_x, min_x, max_y, min_y]
-
     return dataset.map(lambda x: crawl(x))
 
 def main():
