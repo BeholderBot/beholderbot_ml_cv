@@ -10,3 +10,6 @@ import pytorchyolo
 # - Adjust the hyperparameters and network architecture as needed for your object detection task.
 
 # Remember to import any additional modules and write supporting code as necessary.
+
+
+# TODO: Look into writing up the YOLO commands as a bash script for easier execution.
