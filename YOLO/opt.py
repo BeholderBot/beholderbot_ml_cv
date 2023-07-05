@@ -1,12 +1,9 @@
 import cv2
 import heuristic
 from ultralytics import YOLO
+from vidgear.gears import CamGear
 
-cap = cv2.VideoCapture(0)
-
-# Check if the webcam is opened correctly
-if not cap.isOpened():
-    raise IOError("Cannot open webcam")
+cap = CamGear(source=0).start() 
 
 # define some constants
 CONFIDENCE_THRESHOLD = 0.5
@@ -20,8 +17,10 @@ h = 10  # Number of cells vertically
 w = 10  # Number of cells horizontally
 
 while True:
-    ret, frame = cap.read()
-    frame = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    frame = cap.read()
+    if frame is None:
+        break
+    frame = cv2.resize(frame, None, fx=1, fy=1, interpolation=cv2.INTER_AREA)
     if render % 4 == 0:
         detections = model(frame)[0]
     render += 1
@@ -57,7 +56,7 @@ while True:
     if c == 27:
         break
 
-cap.release()
+cap.stop()
 cv2.destroyAllWindows()
 
 
